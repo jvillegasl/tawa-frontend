@@ -18,28 +18,26 @@ type DocumentTypeInputProps = Pick<DocumentInputProps, "control" | "docTypes">;
 
 export function DocumentInput({ control, docTypes }: DocumentInputProps) {
 	return (
-		<div>
-			<Controller
-				name="docNum"
-				control={control}
-				render={({ field }) => (
-					<OutlinedInput
-						{...field}
-						placeholder="Número de Documento"
-						size="small"
-						sx={{ p: 0 }}
-						startAdornment={
-							<InputAdornment position="start">
-								<DocumentTypeInput
-									control={control}
-									docTypes={docTypes}
-								/>
-							</InputAdornment>
-						}
-					/>
-				)}
-			/>
-		</div>
+		<Controller
+			name="docNum"
+			control={control}
+			render={({ field }) => (
+				<OutlinedInput
+					{...field}
+					placeholder="Número de Documento"
+					size="small"
+					sx={{ p: 0 }}
+					startAdornment={
+						<InputAdornment position="start">
+							<DocumentTypeInput
+								control={control}
+								docTypes={docTypes}
+							/>
+						</InputAdornment>
+					}
+				/>
+			)}
+		/>
 	);
 }
 
