@@ -58,7 +58,7 @@ const registerSchema = z.object({
 
 export type RegisterData = z.infer<typeof registerSchema>;
 
-const DEFAULT_VALUES: Partial<RegisterData> = {
+const DEFAULT_VALUES = {
 	docType: "",
 	docNum: "",
 	date: new Date(),
@@ -136,6 +136,17 @@ export function useRegisterForm() {
 		);
 	}, [currentDepartmentId, currentProvinceId, districtsRecord]);
 	const onSubmit = handleSubmit((data) => console.log(data));
+
+	// Reset province and distric if department changes
+	useEffect(() => {
+		setValue("province", DEFAULT_VALUES["province"]);
+		setValue("district", DEFAULT_VALUES["district"]);
+	}, [currentDepartmentId, setValue]);
+
+	// Reset distric if province changes
+	useEffect(() => {
+		setValue("district", DEFAULT_VALUES["district"]);
+	}, [currentProvinceId, setValue]);
 
 	return {
 		docTypes,
