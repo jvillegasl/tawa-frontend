@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import {
 	Box,
 	FormControl,
@@ -7,9 +8,8 @@ import {
 	TextFieldProps,
 } from "@mui/material";
 import { Control, Controller, UseFormRegisterReturn } from "react-hook-form";
-import { RegisterData } from "../hooks";
 import { IDocumentType } from "../interfaces";
-import { forwardRef } from "react";
+import { RegisterData } from "../schemas";
 
 type DocumentInputProps = {
 	control: Control<RegisterData>;

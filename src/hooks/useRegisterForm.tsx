@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -15,14 +14,16 @@ import {
 	getDocumentTypes,
 	getProvinces,
 } from "../services";
-import { RegisterSchemaContext, getRegisterSchema } from "../schemas";
-
-export type RegisterData = z.infer<ReturnType<typeof getRegisterSchema>>;
+import {
+	RegisterData,
+	RegisterSchemaContext,
+	getRegisterSchema,
+} from "../schemas";
 
 const DEFAULT_VALUES = {
 	docType: "",
 	docNum: "",
-	date: new Date(),
+	birthdate: "",
 	department: "",
 	province: "",
 	district: "",
@@ -129,7 +130,6 @@ export function useRegisterForm() {
 			})),
 		);
 	}, [currentDepartmentId, currentProvinceId, districtsRecord]);
-	const onSubmit = handleSubmit((data) => console.log(data));
 
 	// Reset province and distric if department changes
 	useEffect(() => {
@@ -141,6 +141,10 @@ export function useRegisterForm() {
 	useEffect(() => {
 		resetField("district");
 	}, [currentProvinceId, resetField]);
+
+	const onSubmit = handleSubmit((data) => {
+		console.log(data);
+	});
 
 	return {
 		docTypes,

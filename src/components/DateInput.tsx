@@ -1,7 +1,7 @@
 import { Control, Controller } from "react-hook-form";
-import { RegisterData } from "../hooks";
 import dayjs, { Dayjs } from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers";
+import { RegisterData } from "../schemas";
 
 type DateInputProps = {
 	control: Control<RegisterData>;

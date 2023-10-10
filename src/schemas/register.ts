@@ -1,5 +1,6 @@
-import validator from "validator";
 import z from "zod";
+import validator from "validator";
+import dayjs, { Dayjs } from "dayjs";
 
 export type RegisterSchemaContext = {
 	docNumLength?: number;
@@ -8,9 +9,11 @@ export type RegisterSchemaContext = {
 export const getRegisterSchema = (context: RegisterSchemaContext = {}) => {
 	const { docNumLength } = context;
 
-	let docNumSchema = z
+	const requiredSchema = z
 		.string({ required_error: "El campo es obligatorio" })
 		.min(1, "El campo es obligatorio");
+
+	let docNumSchema = requiredSchema;
 
 	if (docNumLength && docNumLength > 0) {
 		docNumSchema = docNumSchema.length(
@@ -22,38 +25,29 @@ export const getRegisterSchema = (context: RegisterSchemaContext = {}) => {
 	}
 
 	return z.object({
-		docType: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
+		docType: requiredSchema,
 		docNum: docNumSchema,
-		name: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
-		fatherLastname: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
-		motherLastname: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
-		birthdate: z.date({ required_error: "El campo es obligatorio" }),
-		gender: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
+		name: requiredSchema,
+		fatherLastname: requiredSchema,
+		motherLastname: requiredSchema,
+		birthdate: z.instanceof(dayjs as unknown as typeof Dayjs, {
+			message: "El campo es obligatorio",
+		}),
+		gender: requiredSchema,
 		email: z.string().email("Proporcione un correo válido"),
 		phoneNumber: z
 			.string()
 			.refine(validator.isMobilePhone, "Proporcione un número válido"),
-		address: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
-		department: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
-		province: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
-		district: z
-			.string({ required_error: "El campo es obligatorio" })
-			.min(1, "El campo es obligatorio"),
+		address: requiredSchema,
+		department: requiredSchema,
+		province: requiredSchema,
+		district: requiredSchema,
 	});
+};
+
+export type RegisterData = Omit<
+	z.infer<ReturnType<typeof getRegisterSchema>>,
+	"birthdate"
+> & {
+	birthdate: Dayjs;
 };
