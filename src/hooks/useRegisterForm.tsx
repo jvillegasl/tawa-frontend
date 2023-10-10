@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import z from "zod";
-import validator from "validator";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
@@ -16,47 +15,9 @@ import {
 	getDocumentTypes,
 	getProvinces,
 } from "../services";
+import { RegisterSchemaContext, getRegisterSchema } from "../schemas";
 
-const registerSchema = z.object({
-	docType: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	docNum: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio")
-		.length(5, "El Número de Documento debe tener 5 caracteres"),
-	name: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	fatherLastname: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	motherLastname: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	date: z.date({ required_error: "El campo es obligatorio" }),
-	gender: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	email: z.string().email("Proporcione un correo válido"),
-	phoneNumber: z
-		.string()
-		.refine(validator.isMobilePhone, "Proporcione un número válido"),
-	address: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	department: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	province: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-	district: z
-		.string({ required_error: "El campo es obligatorio" })
-		.min(1, "El campo es obligatorio"),
-});
-
-export type RegisterData = z.infer<typeof registerSchema>;
+export type RegisterData = z.infer<ReturnType<typeof getRegisterSchema>>;
 
 const DEFAULT_VALUES = {
 	docType: "",
@@ -69,11 +30,28 @@ const DEFAULT_VALUES = {
 };
 
 export function useRegisterForm() {
-	const { register, control, handleSubmit, setValue, watch, ...form } =
-		useForm<RegisterData>({
-			defaultValues: DEFAULT_VALUES,
-			resolver: zodResolver(registerSchema),
-		});
+	const docNumLengthRef = useRef<number>(0);
+
+	const {
+		register,
+		control,
+		handleSubmit,
+		setValue,
+		clearErrors,
+		watch,
+		resetField,
+		...form
+	} = useForm<RegisterData, RegisterSchemaContext>({
+		defaultValues: DEFAULT_VALUES,
+		resolver: (values, context, options) => {
+			const schema = getRegisterSchema(context);
+
+			return zodResolver(schema)(values, context, options);
+		},
+		context: {
+			docNumLength: docNumLengthRef.current,
+		},
+	});
 
 	const [docTypes, setDocTypes] = useState<IDocumentType[]>([]);
 	const [departments, setDepartments] = useState<IDepartment[]>([]);
@@ -93,7 +71,9 @@ export function useRegisterForm() {
 		[provincesRecord, currentDepartmentId],
 	);
 	const districtsOptions = useMemo<IDistrict[]>(
-		() => districtsRecord[currentDepartmentId + currentProvinceId] ?? [],
+		() =>
+			districtsRecord[`${currentDepartmentId}-${currentProvinceId}`] ??
+			[],
 		[districtsRecord, currentDepartmentId, currentProvinceId],
 	);
 
@@ -101,6 +81,17 @@ export function useRegisterForm() {
 		getDocumentTypes().then((t) => setDocTypes(t));
 		getDepartments().then((t) => setDepartments(t));
 	}, []);
+
+	// Update and clear error of docNumLength when docType changes
+	useEffect(() => {
+		const docType = docTypes.find(
+			(t) => t.idTipoDocumento.toString() === currentDocTypeId,
+		);
+
+		const newDocNumLength = docType?.maxNumDigito ?? 0;
+		docNumLengthRef.current = newDocNumLength;
+		clearErrors("docNum");
+	}, [docTypes, currentDocTypeId, clearErrors]);
 
 	// Update docType default value after fetching
 	useEffect(() => {
@@ -126,12 +117,15 @@ export function useRegisterForm() {
 	// Fetch districts if needed
 	useEffect(() => {
 		if (!currentDepartmentId || !currentProvinceId) return;
-		if (currentDepartmentId + currentProvinceId in districtsRecord) return;
+
+		const compoundId = `${currentDepartmentId}-${currentProvinceId}`;
+
+		if (compoundId in districtsRecord) return;
 
 		getDistricts(currentDepartmentId, currentProvinceId).then((v) =>
 			setDistrictsRecord((t) => ({
 				...t,
-				[currentDepartmentId + currentProvinceId]: v,
+				[compoundId]: v,
 			})),
 		);
 	}, [currentDepartmentId, currentProvinceId, districtsRecord]);
@@ -139,14 +133,14 @@ export function useRegisterForm() {
 
 	// Reset province and distric if department changes
 	useEffect(() => {
-		setValue("province", DEFAULT_VALUES["province"]);
-		setValue("district", DEFAULT_VALUES["district"]);
-	}, [currentDepartmentId, setValue]);
+		resetField("province");
+		resetField("district");
+	}, [currentDepartmentId, resetField]);
 
 	// Reset distric if province changes
 	useEffect(() => {
-		setValue("district", DEFAULT_VALUES["district"]);
-	}, [currentProvinceId, setValue]);
+		resetField("district");
+	}, [currentProvinceId, resetField]);
 
 	return {
 		docTypes,
