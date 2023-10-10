@@ -4,48 +4,30 @@ import {
 	FormControl,
 	FormControlLabel,
 	Grid,
-	InputAdornment,
-	InputLabel,
 	MenuItem,
-	OutlinedInput,
 	Radio,
 	RadioGroup,
-	Select,
 	TextField,
 	Typography,
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
-import { DatePicker } from "@mui/x-date-pickers";
-import dayjs, { Dayjs } from "dayjs";
-import { Controller, useForm } from "react-hook-form";
 import { useRegisterForm } from "../hooks";
-import { useEffect } from "react";
-
-type RegisterData = {
-	docType: string;
-	docNum: string;
-	name: string;
-	fatherLastname: string;
-	motherLastname: string;
-	date: Date;
-	gender: string;
-	email: string;
-	cellNumber: string;
-	address: string;
-	department: string;
-	province: string;
-	district: string;
-};
+import { DocumentInput } from "./DocumentInput";
+import { DateInput } from "./DateInput";
+import { InputGroup } from "./InputGroup";
+import { SelectInput } from "./SelectInput";
+import { Controller } from "react-hook-form";
 
 export function RegisterForm() {
-	const { departments } = useRegisterForm();
-	const { register, control, handleSubmit } = useForm<RegisterData>();
-
-	const onSubmit = handleSubmit((data) => console.log(data));
-
-	useEffect(() => {
-		console.log(departments);
-	}, [departments]);
+	const {
+		register,
+		control,
+		onSubmit,
+		departments,
+		docTypes,
+		provincesOptions,
+		districtsOptions,
+	} = useRegisterForm();
 
 	return (
 		<Box component="div" py={16} px={{ xs: 0, md: 2 }}>
@@ -66,30 +48,7 @@ export function RegisterForm() {
 					rowGap={2}
 					mb={3}
 				>
-					<OutlinedInput
-						placeholder="Número de Documento"
-						size="small"
-						sx={{ p: 0 }}
-						{...register("docNum")}
-						startAdornment={
-							<InputAdornment position="start">
-								<FormControl size="small">
-									<Select
-										defaultValue={1}
-										sx={{
-											bgcolor: "primary.main",
-											color: "white",
-										}}
-										{...register("docType")}
-									>
-										<MenuItem value={1}>Test 1</MenuItem>
-										<MenuItem value={2}>Test 2</MenuItem>
-										<MenuItem value={3}>Test 3</MenuItem>
-									</Select>
-								</FormControl>
-							</InputAdornment>
-						}
-					/>
+					<DocumentInput control={control} docTypes={docTypes} />
 
 					<TextField
 						placeholder="Nombre"
@@ -109,139 +68,93 @@ export function RegisterForm() {
 						{...register("motherLastname")}
 					/>
 
-					<Controller
-						name="date"
-						control={control}
-						defaultValue={new Date()}
-						render={({ field }) => (
-							<DatePicker<Dayjs>
-								label="dd/mm/yyyy"
-								slotProps={{ textField: { size: "small" } }}
-								value={dayjs(field.value)}
-								inputRef={field.ref}
-								onChange={(date) =>
-									field.onChange(date?.toDate())
-								}
-							/>
-						)}
-					/>
+					<DateInput control={control} />
 
 					<FormControl>
-						<RadioGroup {...register("gender")} row>
-							<FormControlLabel
-								value="female"
-								control={<Radio size="small" />}
-								label="Femenino"
-							/>
+						<Controller
+							name="gender"
+							control={control}
+							render={({ field }) => (
+								<RadioGroup {...field} row>
+									<FormControlLabel
+										value="female"
+										control={<Radio size="small" />}
+										label="Femenino"
+									/>
 
-							<FormControlLabel
-								value="male"
-								control={<Radio size="small" />}
-								label="Masculino"
-							/>
-						</RadioGroup>
+									<FormControlLabel
+										value="male"
+										control={<Radio size="small" />}
+										label="Masculino"
+									/>
+								</RadioGroup>
+							)}
+						></Controller>
 					</FormControl>
 
-					<OutlinedInput
+					<InputGroup
+						icon="@"
 						placeholder="Correo electrónico"
-						size="small"
-						sx={{ p: 0, overflow: "hidden" }}
 						{...register("email")}
-						startAdornment={
-							<InputAdornment position="start">
-								<Box
-									sx={{
-										bgcolor: "primary.main",
-										color: "white",
-										height: 40,
-										width: 56,
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-									}}
-								>
-									@
-								</Box>
-							</InputAdornment>
-						}
 					/>
 
-					<OutlinedInput
+					<InputGroup
+						icon={<PhoneIcon />}
 						placeholder="Número celular"
-						size="small"
-						sx={{ p: 0, overflow: "hidden" }}
-						{...register("cellNumber")}
-						startAdornment={
-							<InputAdornment position="start">
-								<Box
-									sx={{
-										bgcolor: "primary.main",
-										color: "white",
-										height: 40,
-										width: 56,
-										display: "flex",
-										alignItems: "center",
-										justifyContent: "center",
-									}}
-								>
-									<PhoneIcon />
-								</Box>
-							</InputAdornment>
-						}
+						{...register("phoneNumber")}
 					/>
 
-					<TextField placeholder="Dirección" size="small" />
+					<TextField
+						placeholder="Dirección"
+						size="small"
+						{...register("address")}
+					/>
 
-					<FormControl size="small">
-						<InputLabel>Departamento</InputLabel>
-						<Select
-							label="Departamento"
-							defaultValue={0}
-							{...register("department")}
-						>
-							<MenuItem value={0}>
-								-- Seleccione departamento --
+					<SelectInput
+						label="Departamento"
+						name="department"
+						control={control}
+					>
+						<MenuItem value="">
+							-- Seleccione departamento --
+						</MenuItem>
+
+						{departments.map((t, i) => (
+							<MenuItem key={i} value={t.codDepartamento}>
+								{t.departamento}
 							</MenuItem>
+						))}
+					</SelectInput>
 
-							{departments.map((t, i) => (
-								<MenuItem key={i} value={t.codDepartamento}>
-									{t.departamento}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
+					<SelectInput
+						label="Provincia"
+						name="province"
+						control={control}
+					>
+						<MenuItem value="">
+							-- Seleccione provincia ---
+						</MenuItem>
 
-					<FormControl size="small">
-						<InputLabel>Provincia</InputLabel>
-						<Select
-							label="Provincia"
-							defaultValue={0}
-							{...register("province")}
-						>
-							<MenuItem value={0}>
-								-- Seleccione provincia --
+						{provincesOptions.map((t, i) => (
+							<MenuItem key={i} value={t.codProvincia}>
+								{t.provincia}
 							</MenuItem>
-							<MenuItem value={1}>Test 1</MenuItem>
-							<MenuItem value={2}>Test 2</MenuItem>
-							<MenuItem value={3}>Test 3</MenuItem>
-						</Select>
-					</FormControl>
+						))}
+					</SelectInput>
 
-					<FormControl size="small">
-						<InputLabel>Distrito</InputLabel>
-						<Select
-							label="Distrito"
-							defaultValue={0}
-							{...register("district")}
-						>
-							<MenuItem value={0}>
-								-- Seleccione distrito ---
+					<SelectInput
+						label="Distrito"
+						name="district"
+						control={control}
+					>
+						<MenuItem value="">-- Seleccione distrito ---</MenuItem>
+
+						{districtsOptions.map((t, i) => (
+							<MenuItem key={i} value={t.codUbigeo}>
+								{t.distrito}
 							</MenuItem>
-							<MenuItem value={1}>Test 1</MenuItem>
-							<MenuItem value={2}>Test 2</MenuItem>
-							<MenuItem value={3}>Test 3</MenuItem>
-						</Select>
-					</FormControl>
+						))}
+					</SelectInput>
 				</Grid>
 
 				<Button type="submit" variant="contained" fullWidth>
