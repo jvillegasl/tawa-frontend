@@ -4,7 +4,7 @@ import Banner from "../assets/banner.png";
 
 export default function Register() {
 	return (
-		<Container component="main">
+		<Container component="main" maxWidth="xl">
 			<Box
 				sx={{
 					display: "grid",
