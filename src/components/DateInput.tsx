@@ -5,9 +5,11 @@ import { DatePicker } from "@mui/x-date-pickers";
 
 type DateInputProps = {
 	control: Control<RegisterData>;
+	error?: boolean;
+	helperText?: string;
 };
 
-export function DateInput({ control }: DateInputProps) {
+export function DateInput({ control, error, helperText }: DateInputProps) {
 	return (
 		<Controller
 			name="date"
@@ -15,7 +17,9 @@ export function DateInput({ control }: DateInputProps) {
 			render={({ field }) => (
 				<DatePicker<Dayjs>
 					label="dd/mm/yyyy"
-					slotProps={{ textField: { size: "small" } }}
+					slotProps={{
+						textField: { size: "small", helperText, error },
+					}}
 					value={dayjs(field.value)}
 					inputRef={field.ref}
 					onChange={(date) => field.onChange(date?.toDate())}

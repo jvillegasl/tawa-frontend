@@ -3,6 +3,7 @@ import {
 	Button,
 	FormControl,
 	FormControlLabel,
+	FormHelperText,
 	Grid,
 	MenuItem,
 	Radio,
@@ -11,7 +12,9 @@ import {
 	Typography,
 } from "@mui/material";
 import PhoneIcon from "@mui/icons-material/Phone";
+
 import { useRegisterForm } from "../hooks";
+
 import { DocumentInput } from "./DocumentInput";
 import { DateInput } from "./DateInput";
 import { InputGroup } from "./InputGroup";
@@ -23,6 +26,7 @@ export function RegisterForm() {
 		register,
 		control,
 		onSubmit,
+		formState: { errors },
 		departments,
 		docTypes,
 		provincesOptions,
@@ -48,46 +52,69 @@ export function RegisterForm() {
 					rowGap={2}
 					mb={3}
 				>
-					<DocumentInput control={control} docTypes={docTypes} />
+					<DocumentInput
+						control={control}
+						docTypes={docTypes}
+						error={!!errors.docNum}
+						helperText={errors.docNum?.message}
+					/>
 
 					<TextField
 						placeholder="Nombre"
 						size="small"
 						{...register("name")}
+						error={!!errors.name}
+						helperText={errors.name?.message}
 					/>
 
 					<TextField
 						placeholder="Apellido paterno"
 						size="small"
 						{...register("fatherLastname")}
+						error={!!errors.fatherLastname}
+						helperText={errors.fatherLastname?.message}
 					/>
 
 					<TextField
 						placeholder="Apellido materno"
 						size="small"
 						{...register("motherLastname")}
+						error={!!errors.motherLastname}
+						helperText={errors.motherLastname?.message}
 					/>
 
-					<DateInput control={control} />
+					<DateInput
+						control={control}
+						error={!!errors.date}
+						helperText={errors.date?.message}
+					/>
 
-					<FormControl>
+					<FormControl error={!!errors.gender}>
 						<Controller
 							name="gender"
 							control={control}
 							render={({ field }) => (
-								<RadioGroup {...field} row>
-									<FormControlLabel
-										value="female"
-										control={<Radio size="small" />}
-										label="Femenino"
-									/>
+								<>
+									<RadioGroup {...field} row>
+										<FormControlLabel
+											value="female"
+											control={<Radio size="small" />}
+											label="Femenino"
+										/>
 
-									<FormControlLabel
-										value="male"
-										control={<Radio size="small" />}
-										label="Masculino"
-									/>
-								</RadioGroup>
+										<FormControlLabel
+											value="male"
+											control={<Radio size="small" />}
+											label="Masculino"
+										/>
+									</RadioGroup>
+
+									{!!errors.gender && (
+										<FormHelperText>
+											{errors.gender.message}
+										</FormHelperText>
+									)}
+								</>
 							)}
 						></Controller>
 					</FormControl>
@@ -96,24 +123,32 @@ export function RegisterForm() {
 						icon="@"
 						placeholder="Correo electrónico"
 						{...register("email")}
+						error={!!errors.email}
+						helperText={errors.email?.message}
 					/>
 
 					<InputGroup
 						icon={<PhoneIcon />}
 						placeholder="Número celular"
 						{...register("phoneNumber")}
+						error={!!errors.phoneNumber}
+						helperText={errors.phoneNumber?.message}
 					/>
 
 					<TextField
 						placeholder="Dirección"
 						size="small"
 						{...register("address")}
+						error={!!errors.address}
+						helperText={errors.address?.message}
 					/>
 
 					<SelectInput
 						label="Departamento"
 						name="department"
 						control={control}
+						error={!!errors.department}
+						helperText={errors.department?.message}
 					>
 						<MenuItem value="">
 							-- Seleccione departamento --
@@ -130,6 +165,8 @@ export function RegisterForm() {
 						label="Provincia"
 						name="province"
 						control={control}
+						error={!!errors.department}
+						helperText={errors.department?.message}
 					>
 						<MenuItem value="">
 							-- Seleccione provincia ---
@@ -146,6 +183,8 @@ export function RegisterForm() {
 						label="Distrito"
 						name="district"
 						control={control}
+						error={!!errors.department}
+						helperText={errors.department?.message}
 					>
 						<MenuItem value="">-- Seleccione distrito ---</MenuItem>
 

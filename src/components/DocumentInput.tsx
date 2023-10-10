@@ -2,8 +2,9 @@ import {
 	FormControl,
 	InputAdornment,
 	MenuItem,
-	OutlinedInput,
 	Select,
+	TextField,
+	TextFieldProps,
 } from "@mui/material";
 import { Control, Controller } from "react-hook-form";
 import { RegisterData } from "../hooks";
@@ -12,29 +13,39 @@ import { IDocumentType } from "../interfaces";
 type DocumentInputProps = {
 	control: Control<RegisterData>;
 	docTypes: IDocumentType[];
-};
+} & Pick<TextFieldProps, "error" | "helperText">;
 
 type DocumentTypeInputProps = Pick<DocumentInputProps, "control" | "docTypes">;
 
-export function DocumentInput({ control, docTypes }: DocumentInputProps) {
+export function DocumentInput({
+	control,
+	docTypes,
+	error,
+	helperText,
+}: DocumentInputProps) {
 	return (
 		<Controller
 			name="docNum"
 			control={control}
 			render={({ field }) => (
-				<OutlinedInput
+				<TextField
 					{...field}
 					placeholder="Número de Documento"
 					size="small"
-					sx={{ p: 0 }}
-					startAdornment={
-						<InputAdornment position="start">
-							<DocumentTypeInput
-								control={control}
-								docTypes={docTypes}
-							/>
-						</InputAdornment>
-					}
+					variant="outlined"
+					error={error}
+					helperText={helperText}
+					InputProps={{
+						sx: { p: 0 },
+						startAdornment: (
+							<InputAdornment position="start">
+								<DocumentTypeInput
+									control={control}
+									docTypes={docTypes}
+								/>
+							</InputAdornment>
+						),
+					}}
 				/>
 			)}
 		/>

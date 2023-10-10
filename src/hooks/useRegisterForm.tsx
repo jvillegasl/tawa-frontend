@@ -1,4 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import z from "zod";
+import validator from "validator";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import {
 	IDepartment,
 	IDistrict,
@@ -11,23 +16,47 @@ import {
 	getDocumentTypes,
 	getProvinces,
 } from "../services";
-import { useForm, useWatch } from "react-hook-form";
 
-export type RegisterData = {
-	docType: string;
-	docNum: string;
-	name: string;
-	fatherLastname: string;
-	motherLastname: string;
-	date: Date;
-	gender: string;
-	email: string;
-	phoneNumber: string;
-	address: string;
-	department: string;
-	province: string;
-	district: string;
-};
+const registerSchema = z.object({
+	docType: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	docNum: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio")
+		.length(5, "El Número de Documento debe tener 5 caracteres"),
+	name: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	fatherLastname: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	motherLastname: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	date: z.date({ required_error: "El campo es obligatorio" }),
+	gender: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	email: z.string().email("Proporcione un correo válido"),
+	phoneNumber: z
+		.string()
+		.refine(validator.isMobilePhone, "Proporcione un número válido"),
+	address: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	department: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	province: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+	district: z
+		.string({ required_error: "El campo es obligatorio" })
+		.min(1, "El campo es obligatorio"),
+});
+
+export type RegisterData = z.infer<typeof registerSchema>;
 
 const DEFAULT_VALUES: Partial<RegisterData> = {
 	docType: "",
@@ -43,6 +72,7 @@ export function useRegisterForm() {
 	const { register, control, handleSubmit, setValue, watch, ...form } =
 		useForm<RegisterData>({
 			defaultValues: DEFAULT_VALUES,
+			resolver: zodResolver(registerSchema),
 		});
 
 	const [docTypes, setDocTypes] = useState<IDocumentType[]>([]);

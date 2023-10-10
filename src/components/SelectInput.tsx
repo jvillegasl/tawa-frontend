@@ -1,4 +1,4 @@
-import { FormControl, InputLabel, Select } from "@mui/material";
+import { FormControl, FormHelperText, InputLabel, Select } from "@mui/material";
 import { ReactNode } from "react";
 import {
 	Controller,
@@ -10,6 +10,8 @@ import {
 type SelectInputProps = {
 	label: string;
 	children?: ReactNode;
+	error?: boolean;
+	helperText?: string;
 };
 
 export function SelectInput<
@@ -20,10 +22,12 @@ export function SelectInput<
 	name,
 	control,
 	children,
+	error,
+	helperText,
 }: SelectInputProps &
 	Pick<ControllerProps<TFieldValues, TName>, "control" | "name">) {
 	return (
-		<FormControl size="small">
+		<FormControl size="small" error={error}>
 			<InputLabel shrink>{label}</InputLabel>
 
 			<Controller
@@ -35,6 +39,8 @@ export function SelectInput<
 					</Select>
 				)}
 			/>
+
+			{error && <FormHelperText>{helperText}</FormHelperText>}
 		</FormControl>
 	);
 }
