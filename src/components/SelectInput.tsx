@@ -24,12 +24,16 @@ export function SelectInput<
 	Pick<ControllerProps<TFieldValues, TName>, "control" | "name">) {
 	return (
 		<FormControl size="small">
-			<InputLabel>{label}</InputLabel>
+			<InputLabel shrink>{label}</InputLabel>
 
 			<Controller
 				name={name}
 				control={control}
-				render={() => <Select label={label}>{children}</Select>}
+				render={({ field }) => (
+					<Select {...field} label={label} displayEmpty notched>
+						{children}
+					</Select>
+				)}
 			/>
 		</FormControl>
 	);
