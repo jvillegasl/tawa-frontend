@@ -22,7 +22,7 @@ export function DateInput({ control, error, helperText }: DateInputProps) {
 					}}
 					value={dayjs(field.value)}
 					inputRef={field.ref}
-					onChange={(date) => field.onChange(date?.toDate())}
+					onChange={(date) => field.onChange(date)}
 				/>
 			)}
 		/>
