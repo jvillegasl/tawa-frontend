@@ -98,13 +98,13 @@ export function RegisterForm() {
 								<>
 									<RadioGroup {...field} row>
 										<FormControlLabel
-											value="female"
+											value="0"
 											control={<Radio size="small" />}
 											label="Femenino"
 										/>
 
 										<FormControlLabel
-											value="male"
+											value="1"
 											control={<Radio size="small" />}
 											label="Masculino"
 										/>
@@ -166,8 +166,8 @@ export function RegisterForm() {
 						label="Provincia"
 						name="province"
 						control={control}
-						error={!!errors.department}
-						helperText={errors.department?.message}
+						error={!!errors.province}
+						helperText={errors.province?.message}
 					>
 						<MenuItem value="">
 							-- Seleccione provincia ---
@@ -184,8 +184,8 @@ export function RegisterForm() {
 						label="Distrito"
 						name="district"
 						control={control}
-						error={!!errors.department}
-						helperText={errors.department?.message}
+						error={!!errors.district}
+						helperText={errors.district?.message}
 					>
 						<MenuItem value="">-- Seleccione distrito ---</MenuItem>
 
