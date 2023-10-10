@@ -55,6 +55,7 @@ export function RegisterForm() {
 					<DocumentInput
 						control={control}
 						docTypes={docTypes}
+						{...register("docNum")}
 						error={!!errors.docNum}
 						helperText={errors.docNum?.message}
 					/>

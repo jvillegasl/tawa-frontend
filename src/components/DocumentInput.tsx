@@ -1,56 +1,45 @@
 import {
+	Box,
 	FormControl,
-	InputAdornment,
 	MenuItem,
 	Select,
 	TextField,
 	TextFieldProps,
 } from "@mui/material";
-import { Control, Controller } from "react-hook-form";
+import { Control, Controller, UseFormRegisterReturn } from "react-hook-form";
 import { RegisterData } from "../hooks";
 import { IDocumentType } from "../interfaces";
+import { forwardRef } from "react";
 
 type DocumentInputProps = {
 	control: Control<RegisterData>;
 	docTypes: IDocumentType[];
-} & Pick<TextFieldProps, "error" | "helperText">;
+} & Pick<TextFieldProps, "error" | "helperText"> &
+	Omit<UseFormRegisterReturn, "ref">;
 
 type DocumentTypeInputProps = Pick<DocumentInputProps, "control" | "docTypes">;
 
-export function DocumentInput({
-	control,
-	docTypes,
-	error,
-	helperText,
-}: DocumentInputProps) {
-	return (
-		<Controller
-			name="docNum"
-			control={control}
-			render={({ field }) => (
+export const DocumentInput = forwardRef<HTMLInputElement, DocumentInputProps>(
+	({ control, docTypes, error, helperText, ...props }, ref) => {
+		return (
+			<Box sx={{ display: "flex" }}>
+				<DocumentTypeInput control={control} docTypes={docTypes} />
 				<TextField
-					{...field}
+					ref={ref}
+					className="flex-grow-1"
 					placeholder="Número de Documento"
 					size="small"
 					variant="outlined"
+					sx={{ flexGrow: 1 }}
+					{...props}
 					error={error}
 					helperText={helperText}
-					InputProps={{
-						sx: { p: 0 },
-						startAdornment: (
-							<InputAdornment position="start">
-								<DocumentTypeInput
-									control={control}
-									docTypes={docTypes}
-								/>
-							</InputAdornment>
-						),
-					}}
+					autoFocus
 				/>
-			)}
-		/>
-	);
-}
+			</Box>
+		);
+	},
+);
 
 function DocumentTypeInput({ control, docTypes }: DocumentTypeInputProps) {
 	return (
