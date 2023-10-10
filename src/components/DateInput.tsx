@@ -12,11 +12,11 @@ type DateInputProps = {
 export function DateInput({ control, error, helperText }: DateInputProps) {
 	return (
 		<Controller
-			name="date"
+			name="birthdate"
 			control={control}
 			render={({ field }) => (
 				<DatePicker<Dayjs>
-					label="dd/mm/yyyy"
+					label="Fecha de Nacimiento"
 					slotProps={{
 						textField: { size: "small", helperText, error },
 					}}

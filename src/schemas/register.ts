@@ -35,7 +35,7 @@ export const getRegisterSchema = (context: RegisterSchemaContext = {}) => {
 		motherLastname: z
 			.string({ required_error: "El campo es obligatorio" })
 			.min(1, "El campo es obligatorio"),
-		date: z.date({ required_error: "El campo es obligatorio" }),
+		birthdate: z.date({ required_error: "El campo es obligatorio" }),
 		gender: z
 			.string({ required_error: "El campo es obligatorio" })
 			.min(1, "El campo es obligatorio"),

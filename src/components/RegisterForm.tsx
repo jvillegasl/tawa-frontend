@@ -86,8 +86,8 @@ export function RegisterForm() {
 
 					<DateInput
 						control={control}
-						error={!!errors.date}
-						helperText={errors.date?.message}
+						error={!!errors.birthdate}
+						helperText={errors.birthdate?.message}
 					/>
 
 					<FormControl error={!!errors.gender}>
