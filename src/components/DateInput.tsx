@@ -12,7 +12,6 @@ export function DateInput({ control }: DateInputProps) {
 		<Controller
 			name="date"
 			control={control}
-			defaultValue={new Date()}
 			render={({ field }) => (
 				<DatePicker<Dayjs>
 					label="dd/mm/yyyy"
