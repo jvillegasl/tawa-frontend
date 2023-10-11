@@ -13,12 +13,14 @@ import {
 	getDistricts,
 	getDocumentTypes,
 	getProvinces,
+	registerPatient,
 } from "../services";
 import {
 	RegisterData,
 	RegisterSchemaContext,
 	getRegisterSchema,
 } from "../schemas";
+import { toast } from "react-toastify";
 
 const DEFAULT_VALUES = {
 	docType: "",
@@ -143,7 +145,12 @@ export function useRegisterForm() {
 	}, [currentProvinceId, resetField]);
 
 	const onSubmit = handleSubmit((data) => {
-		console.log(data);
+		registerPatient(data)
+			.then(() => toast.success("Registro exitoso"))
+			.catch((e) => {
+				console.error(e);
+				toast.error("Algo salió mal. Íntentelo nuevamente");
+			});
 	});
 
 	return {
